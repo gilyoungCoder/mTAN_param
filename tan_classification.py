@@ -55,7 +55,7 @@ parser.add_argument('--num-ref-points', type=int, default=128)
 parser.add_argument('--classify-pertp', action='store_true')
 parser.add_argument('--aug-ratio', type=int, default=2)
 parser.add_argument('--drate', type=float, default=0.5)
-parser.add_argument('--sethidden', type=int, default=64)
+parser.add_argument('--sethidden', type=int, default=42)
 
 
 args = parser.parse_args()
@@ -152,7 +152,7 @@ if __name__ == '__main__':
             
             # reg_loss = utils.diversity_regularization(tp_aug, drate = args.drate)
 
-            reg_loss = utils.spread_regularization_loss(output_aug) + utils.spread_regularization_loss(ref)
+            reg_loss = utils.efficient_spread_regularization_loss(output_aug) + utils.efficient_spread_regularization_loss(ref)
 
             out = rec(output_aug, ref)
 
