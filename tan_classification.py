@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     aug = models.TimeSeriesAugmentation(dim*2+1, 256, hidden_dim, num_outputs=args.aug_ratio*num_tp).to(device)
 
-    query = models.QueryMa(hidden_dim, 128).to(device)
+    query = models.TimeSeriesAugmentation(dim*2+1, 256, hidden_dim, 128).to(device)
     
     params = (list(rec.parameters()) + list(dec.parameters()) + list(classifier.parameters()) + list(aug.parameters()) + list(query.parameters()))
     print('parameters:', utils.count_parameters(rec), utils.count_parameters(dec), utils.count_parameters(classifier), utils.count_parameters(aug), utils.count_parameters(query))
@@ -144,8 +144,8 @@ if __name__ == '__main__':
             observed_data, observed_mask, observed_tp \
                 = train_batch[:, :, :dim], train_batch[:, :, dim:2*dim], train_batch[:, :, -1]
             
-            output_aug = aug(observed_tp, torch.cat((observed_data, observed_mask), 2))
-            ref = query(output_aug)
+            output_aug = aug(observed_tp*hidden_dim, torch.cat((observed_data, observed_mask), 2))
+            ref = query(observed_tp*hidden_dim, torch.cat((observed_data, observed_mask), 2))
             # x_aug_copy = x_aug.clone()
 
             # val = torch.where(mask == 1, x_aug, torch.zeros_like(x_aug))
@@ -171,9 +171,10 @@ if __name__ == '__main__':
             # reg_loss = utils.diversity_regularization(time_steps, drate = 0.5)
             # val = torch.where(mask == 1, x_aug, torch.zeros_like(x_aug))
             
-            # if random.random() < 0.01:
-            #     print("ref ", ref[0])
+            # if random.random() < 0.002:
             #     print("out ", output_aug[0])
+            #     print("ref ", ref[0])
+
 
             #     # print(f"alpha : {self.alpha}")
             #     # print(f"original tt : {combined_x[0, :, -1]}")

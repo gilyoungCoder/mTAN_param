@@ -146,14 +146,15 @@ def evaluate_classifier(model, query, aug, dec, kl_coef, test_loader, args=None,
     pred = []
     true = []
     test_loss = 0
+    hidden_dim = args.sethidden
     for test_batch, label in test_loader:
         test_batch, label = test_batch.to(device), label.to(device)
         batch_len = test_batch.shape[0]
         observed_data, observed_mask, observed_tp \
             = test_batch[:, :, :dim], test_batch[:, :, dim:2*dim], test_batch[:, :, -1]
         with torch.no_grad():
-            x_aug= aug(observed_tp, torch.cat((observed_data, observed_mask), 2))
-            ref = query(x_aug)        
+            x_aug= aug(observed_tp*hidden_dim, torch.cat((observed_data, observed_mask), 2))
+            ref = query(observed_tp*hidden_dim, torch.cat((observed_data, observed_mask), 2))
             out = model(x_aug, ref)
 
             if reconst:
