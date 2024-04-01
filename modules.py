@@ -62,11 +62,4 @@ class PMA(nn.Module):
         self.num = num_seeds
 
     def forward(self, X):
-        if random.random() < 0.003:
-            if self.num > 128:
-                print("augmentation")
-                print("PMA key Parameter: ", self.S) 
-                print("PMA grad: ", self.S.grad)
-
-            
         return self.mab(self.S.repeat(X.size(0), 1, 1), X)
